@@ -1,0 +1,11 @@
+: 1
+name: libcrails-signin
+version: 2.0.0
+summary: user session management for the crails framework
+license: BSD-3-Clause
+description-file: README.md
+url: https://github.com/crails-framework/libcrails-signin
+email: michael@unetresgrossebite.com
+depends: * build2 >= 0.15.0
+depends: * bpkg >= 0.15.0
+depends: { libcrails-encrypt libcrails-random libcrails-controllers } ^2.0.0

@@ -1,0 +1,7 @@
+project = libcrails-signin
+
+using version
+using config
+using test
+using install
+using dist

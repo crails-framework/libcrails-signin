@@ -1,0 +1,11 @@
+: 1
+role: prerequisite
+location: https://github.com/crails-framework/libcrails-random.git#master
+
+:
+role: prerequisite
+location: https://github.com/crails-framework/libcrails-controllers.git#master
+
+:
+role: prerequisite
+location: https://github.com/crails-framework/libcrails-encrypt.git#master

@@ -1,0 +1,6 @@
+$out_root/
+{
+  include libcrails-signin/
+}
+
+export $out_root/libcrails-signin/$import.target
