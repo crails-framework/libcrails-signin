@@ -10,7 +10,7 @@ namespace Crails
   class AuthController : public SUPER
   {
   public:
-    AuthController(Crails::Params& params) : SUPER(params), user_session(SUPER::session)
+    AuthController(Crails::Context& context) : SUPER(context), user_session(SUPER::database, SUPER::session)
     {
     }
 
@@ -22,6 +22,8 @@ namespace Crails
 
     virtual bool require_authentified_user() const { return false; }
 
+    virtual void on_user_not_authenticated() { SUPER::respond_with(HttpStatus::unauthorized); }
+
     void initialize_required_user()
     {
       if (require_authentified_user())
@@ -32,7 +34,7 @@ namespace Crails
     bool initialize_current_user()
     {
       if (user_session.get_current_user() == nullptr)
-        SUPER::respond_with(SUPER::ResponseStatus::unauthorized);
+        on_user_not_authenticated();
       return true;
     }
 

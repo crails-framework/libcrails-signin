@@ -13,7 +13,7 @@ namespace Crails
   public:
     typedef std::shared_ptr<USER> UserPtr;
 
-    Session(Data session_data) : session_data(session_data)
+    Session(Odb::Connection& database, Data session_data) : database(database), session_data(session_data)
     {}
 
     std::time_t get_min_sign_in_time()
@@ -37,12 +37,10 @@ namespace Crails
 
       if (user.get_sign_in_at() == 0 || (user.get_sign_in_at() < min_sign_in_at))
       {
-        auto database = ODB::Connection::get();
-
         user.set_sign_in_at(system_clock::to_time_t(system_clock::now()));
         user.generate_authentication_token();
-        database->save(user);
-        database->commit();
+        database.save(user);
+        database.commit();
       }
       session_data["auth_token"] = user.get_authentication_token();
       session_data["cuid"]       = user.get_id();
@@ -52,11 +50,9 @@ namespace Crails
     {
       if (get_current_user())
       {
-        auto database = ODB::Connection::get();
-
         current_user->set_sign_in_at(0);
-        database->save(*current_user);
-        database->commit();
+        database.save(*current_user);
+        database.commit();
       }
       session_data["auth_token"].destroy();
       session_data["cuid"].destroy();
@@ -67,14 +63,13 @@ namespace Crails
       if (current_user == nullptr && session_data["auth_token"].exists() && session_data["cuid"].exists())
       {
         auto auth_token = session_data["auth_token"].as<std::string>();
-        auto cuid       = session_data["cuid"].as<ODB::id_type>();
-        auto database   = ODB::Connection::get();
+        auto cuid       = session_data["cuid"].as<Odb::id_type>();
 
-        database->find_one(
+        database.find_one(
           current_user,
-             odb::pgsql::query<USER>::id                   == cuid
-          && odb::pgsql::query<USER>::authentication_token == auth_token
-          && odb::pgsql::query<USER>::sign_in_at           >= get_min_sign_in_time()
+             odb::query<USER>::id                   == cuid
+          && odb::query<USER>::authentication_token == auth_token
+          && odb::query<USER>::sign_in_at           >= get_min_sign_in_time()
         );
       }
       return current_user;
@@ -93,8 +88,9 @@ namespace Crails
     }
 
   private:
-    Data    session_data;
-    UserPtr current_user;
+    Odb::Connection& database;
+    Data             session_data;
+    UserPtr          current_user;
   };
 }
 
