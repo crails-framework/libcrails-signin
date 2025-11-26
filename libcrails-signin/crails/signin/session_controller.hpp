@@ -66,7 +66,7 @@ namespace Crails
         SUPER::respond_with(HttpStatus::forbidden);
     }
 
-  private:
+  protected:
     virtual UserPtr find_user() = 0;
 
     Session<USER> user_session;
